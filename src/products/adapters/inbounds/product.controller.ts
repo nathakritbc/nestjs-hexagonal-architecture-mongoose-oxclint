@@ -53,6 +53,7 @@ export class ProductController {
     status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: 'Internal server error.',
   })
+  @Transactional()
   @Get()
   getAll(): Promise<IProduct[]> {
     return this.getAllProductsUseCase.execute();
@@ -71,6 +72,7 @@ export class ProductController {
     status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: 'Internal server error.',
   })
+  @Transactional()
   @ApiParam({ name: 'id', type: String, description: 'The id of the product' })
   @Delete(':id')
   delete(@Param('id') id: ProductId): Promise<void> {
@@ -90,6 +92,7 @@ export class ProductController {
     status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: 'Internal server error.',
   })
+  @Transactional()
   @ApiParam({ name: 'id', type: String, description: 'The id of the product' })
   @Put(':id')
   update(@Param('id') id: ProductId, @Body() updateProductDto: UpdateProductDto): Promise<IProduct> {
@@ -112,6 +115,7 @@ export class ProductController {
     description: 'Internal server error.',
   })
   @ApiParam({ name: 'id', type: String, description: 'The id of the product' })
+  @Transactional()
   @Get(':id')
   getById(@Param('id') id: ProductId): Promise<IProduct | undefined> {
     return this.getProductByIdUseCase.execute(id);
