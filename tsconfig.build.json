@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": ["mongo-migrations/**/*", "node_modules", "test", "dist", "**/*spec.ts"]
+}

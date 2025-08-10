@@ -1,0 +1,5 @@
+export type Brand<K, T> = K & { readonly __brand: T };
+export type RequireFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
+
+export type CreatedAt = Brand<Date, 'CreatedAt'>;
+export type UpdatedAt = Brand<Date, 'UpdatedAt'>;
