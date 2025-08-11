@@ -1,7 +1,8 @@
 import { Transactional } from '@nestjs-cls/transactional';
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
+import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
 import type { IProduct, ProductDescription, ProductId, ProductName } from 'src/products/applications/domains/product';
 import { ProductImage, ProductPrice } from 'src/products/applications/domains/product';
 import { CreateProductUseCase } from 'src/products/applications/usecases/createProduct.usecase';
@@ -12,7 +13,7 @@ import { UpdateProductByIdUseCase } from 'src/products/applications/usecases/upd
 import { CreateProductDto } from './dto/createProduct.dto';
 import type { UpdateProductDto } from './dto/updateProduct.dto';
 
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('products')
 export class ProductController {
   constructor(

@@ -1,11 +1,11 @@
 ### Login
 # @name login
-POST {{host}}/auth/login/email
-content-type: application/json
+POST {{host}}/auth/login
+content-type: application/json 
 
 {
-  "email": "jame@ex1app.com",
-	"password": "12345678Test"
+  "username": "user1",
+	"password": "12345678"
 }
 ###
 
@@ -16,8 +16,7 @@ POST {{host}}/products
 Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
-{ 
-
+{  
     "name": "Product  99",
     "price": 100,
     "image": "https://example.com/avatar.jpg",
@@ -26,9 +25,13 @@ authorization: Bearer {{myAccessToken}}
 
 ### Get All Products
 GET {{host}}/products
+authorization: Bearer {{myAccessToken}}
+
 
 ### Get Product By Id
 GET {{host}}/products/689871514875063e8a146c28
+authorization: Bearer {{myAccessToken}}
+
 
 ### Update Product By Id
 PUT {{host}}/products/689871514875063e8a146c28

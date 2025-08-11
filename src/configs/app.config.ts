@@ -1,6 +1,6 @@
 import { ConfigModuleOptions } from '@nestjs/config';
 import { Builder } from 'builder-pattern';
-
+import 'dotenv/config';
 export const configModule = Builder<ConfigModuleOptions>()
   .envFilePath(['.env', '.env.development.local'])
   .isGlobal(true)
