@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Builder } from 'builder-pattern';
 import { Model } from 'mongoose';
-import { IProduct, Product, ProductId } from 'src/products/applications/domains/product';
+import { IProduct, Product, ProductId } from 'src/products/applications/domains/product.domain';
 import { ProductRepository } from 'src/products/applications/ports/product.repository';
 import { ProductEntity } from './product.entity';
 import { ProductMongoSchema, productsCollectionName } from './product.schema';

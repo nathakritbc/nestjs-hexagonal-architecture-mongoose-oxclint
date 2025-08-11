@@ -1,4 +1,4 @@
-import { IProduct, ProductId } from '../domains/product';
+import { IProduct, ProductId } from '../domains/product.domain';
 
 export type CreateProductCommand = Omit<IProduct, 'id' | 'createdAt' | 'updatedAt'>;
 

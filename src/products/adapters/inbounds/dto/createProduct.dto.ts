@@ -6,7 +6,7 @@ import type {
   ProductImage,
   ProductName,
   ProductPrice,
-} from 'src/products/applications/domains/product';
+} from 'src/products/applications/domains/product.domain';
 import { CreateProductCommand } from 'src/products/applications/ports/product.repository';
 
 export class CreateProductDto implements CreateProductCommand {

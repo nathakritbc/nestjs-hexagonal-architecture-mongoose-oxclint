@@ -7,7 +7,7 @@ import type {
   ProductName,
   ProductPrice,
   ProductUpdatedAt,
-} from '../../applications/domains/product';
+} from '../../applications/domains/product.domain';
 import { ProductEntity } from './product.entity';
 
 export const productsCollectionName = 'products';
