@@ -13,7 +13,10 @@ export class GetUserByUsernameUseCase {
     private readonly userRepository: UserRepository,
   ) {}
 
-  execute(query: GetUserByUsernameQuery): Promise<IUser | undefined> {
-    return this.userRepository.getByUsername(query.username);
+  async execute(query: GetUserByUsernameQuery): Promise<IUser | undefined> {
+    const user = await this.userRepository.getByUsername(query.username);
+    if (!user) return undefined;
+    user.hiddenPassword();
+    return user;
   }
 }

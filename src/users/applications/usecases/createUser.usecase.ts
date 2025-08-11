@@ -20,6 +20,9 @@ export class CreateUserUseCase {
   async execute({ username, email, password }: CreateUserCommand): Promise<IUser> {
     const user = Builder(User).username(username).email(email).build();
     await user.setHashPassword(password);
-    return this.userRepository.create(user);
+
+    const createdUser = await this.userRepository.create(user);
+    createdUser.hiddenPassword();
+    return createdUser;
   }
 }

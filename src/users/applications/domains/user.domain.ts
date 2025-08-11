@@ -18,8 +18,9 @@ export interface IUser {
   createdAt?: UserCreatedAt;
   updateAt?: UserUpdatedAt;
 
-  setHashPassword(password: UserPassword): Promise<void>;
   comparePassword(password: UserPassword): Promise<boolean>;
+  hiddenPassword(): void;
+  setHashPassword(password: UserPassword): Promise<void>;
 }
 
 export class User implements IUser {
@@ -30,7 +31,15 @@ export class User implements IUser {
   createdAt?: UserCreatedAt;
   updateAt?: UserUpdatedAt;
 
-  async setHashPassword(password: UserPassword): Promise<void> {
+  public async comparePassword(password: UserPassword): Promise<boolean> {
+    return argon2.verify(this.password, password);
+  }
+
+  public hiddenPassword() {
+    this.password = '' as UserPassword;
+  }
+
+  public async setHashPassword(password: UserPassword): Promise<void> {
     const argon2Options = StrictBuilder<argon2.Options>()
       .type(argon2.argon2id)
       .memoryCost(argon2Config.memoryCost)
@@ -40,9 +49,5 @@ export class User implements IUser {
       .build();
 
     this.password = (await argon2.hash(password, argon2Options)) as UserPassword;
-  }
-
-  async comparePassword(password: UserPassword): Promise<boolean> {
-    return argon2.verify(this.password, password);
   }
 }
