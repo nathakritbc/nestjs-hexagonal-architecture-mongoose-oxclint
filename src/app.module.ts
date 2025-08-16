@@ -10,6 +10,7 @@ import { clsMongoose } from './configs/clsMongoose.config';
 import { httpConfig } from './configs/http.config';
 import { loggerConfig } from './configs/logger.config';
 import { mongooseRootConfig } from './configs/mongo.config';
+import { OrderModule } from './orders/order.module';
 import { ProductModule } from './products/product.module';
 import { UserModule } from './users/user.module';
 
@@ -21,6 +22,7 @@ import { UserModule } from './users/user.module';
     LoggerModule.forRoot(loggerConfig),
     MongooseModule.forRootAsync(mongooseRootConfig),
     AuthModule,
+    OrderModule,
     ProductModule,
     UserModule,
   ],

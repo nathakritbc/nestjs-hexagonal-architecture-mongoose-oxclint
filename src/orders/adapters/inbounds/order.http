@@ -1,0 +1,57 @@
+### Login
+# @name login
+POST {{host}}/auth/login
+content-type: application/json 
+
+{
+  "username": "user1",
+	"password": "12345678"
+}
+###
+
+@myAccessToken = {{login.response.body.accessToken}}
+
+### Create orders
+POST {{host}}/orders
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{  
+    "date": "2021-01-01",
+    "status": "Pending",
+    "customer": {
+        "initial": "J1",
+        "name": "John Doe1",
+        "email": "john.doe2@example.com"
+    }
+}
+
+### Get All Orders
+GET {{host}}/orders
+authorization: Bearer {{myAccessToken}}
+
+
+### Get Order By Id
+GET {{host}}/orders/689871514875063e8a146c28
+authorization: Bearer {{myAccessToken}}
+
+
+### Update Order By Id
+PUT {{host}}/orders/689871514875063e8a146c28
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}
+
+{
+  "date": "2021-01-01",
+  "status": "Pending",
+  "customer": {
+    "initial": "J",
+    "name": "John Doe",
+    "email": "john.doe@example.com"
+  }
+}
+
+### Delete Order By Id
+DELETE {{host}}/orders/689871514875063e8a146c28
+Content-Type: application/json
+authorization: Bearer {{myAccessToken}}

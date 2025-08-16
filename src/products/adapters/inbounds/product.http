@@ -17,7 +17,7 @@ Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 {  
-    "name": "Product  99",
+    "name": "Product  1",
     "price": 100,
     "image": "https://example.com/avatar.jpg",
     "description": "This is a product description"
