@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IOrder } from '../domains/order.domain';
-import type { OrderRepository } from '../ports/order.repository';
+import type { getAllParams, OrderRepository } from '../ports/order.repository';
 import { orderRepositoryToken } from '../ports/order.repository';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class GetAllOrdersUseCase {
     private readonly orderRepository: OrderRepository,
   ) {}
 
-  async execute(): Promise<IOrder[]> {
-    return this.orderRepository.getAll();
+  async execute(params?: getAllParams): Promise<IOrder[]> {
+    return this.orderRepository.getAll(params);
   }
 }

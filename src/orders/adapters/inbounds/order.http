@@ -21,13 +21,14 @@ authorization: Bearer {{myAccessToken}}
     "status": "Pending",
     "customer": {
         "initial": "J1",
-        "name": "John Doe1",
-        "email": "john.doe2@example.com"
+        "name": "apple",
+        "email": "apple.doe2@example.com"
     }
 }
 
 ### Get All Orders
-GET {{host}}/orders
+GET {{host}}/orders?page=1&limit=2
+Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 
 

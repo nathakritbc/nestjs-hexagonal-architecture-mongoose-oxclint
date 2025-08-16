@@ -3,9 +3,9 @@ import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Builder } from 'builder-pattern';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { IOrder, IOrderCustomer, Order, OrderId } from 'src/orders/applications/domains/order.domain';
-import { OrderRepository } from 'src/orders/applications/ports/order.repository';
+import { getAllParams, OrderRepository } from 'src/orders/applications/ports/order.repository';
 import { OrderEntity } from './order.entity';
 import { OrderMongoSchema, ordersCollectionName } from './order.schema';
 
@@ -30,9 +30,33 @@ export class OrderMongoRepository implements OrderRepository {
     await this.orderModel.deleteOne({ _id: id }).session(this.txHost.tx).lean().exec();
   }
 
-  async getAll(): Promise<IOrder[]> {
-    const orders = await this.orderModel.find().session(this.txHost.tx).lean().exec();
-    return orders ? orders.map(OrderMongoRepository.toDomain) : [];
+  private buildSearchFilter(search: string): FilterQuery<OrderEntity> {
+    return {
+      $or: [
+        { 'customer.name': { $regex: search, $options: 'i' } },
+        { 'customer.email': { $regex: search, $options: 'i' } },
+      ],
+    };
+  }
+
+  private mapOrdersToDomain(orders: OrderEntity[]): IOrder[] {
+    return orders.map(OrderMongoRepository.toDomain);
+  }
+
+  async getAll(params?: getAllParams): Promise<IOrder[]> {
+    const { page = 1, limit = 10, search = '' } = params || {};
+
+    const searchFilter = this.buildSearchFilter(search);
+    const query = this.orderModel.find(searchFilter).session(this.txHost.tx).lean();
+
+    if (limit === -1) {
+      const orders = await query.exec();
+      return this.mapOrdersToDomain(orders);
+    }
+
+    const skip = (page - 1) * limit;
+    const orders = await query.skip(skip).limit(limit).exec();
+    return this.mapOrdersToDomain(orders);
   }
 
   async getById(id: OrderId): Promise<IOrder | undefined> {
