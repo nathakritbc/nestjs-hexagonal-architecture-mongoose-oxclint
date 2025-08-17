@@ -1,10 +1,9 @@
 import { Transactional } from '@nestjs-cls/transactional';
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
-import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
 import { Order, type IOrder, type OrderId } from 'src/orders/applications/domains/order.domain';
-import type { getAllParams } from 'src/orders/applications/ports/order.repository';
+import type { getAllParams, IOrderReturn } from 'src/orders/applications/ports/order.repository';
 import { CreateOrderUseCase } from 'src/orders/applications/usecases/createOrder.usecase';
 import { DeleteOrderByIdUseCase } from 'src/orders/applications/usecases/deleteOrderById.usecase';
 import { GetAllOrdersUseCase } from 'src/orders/applications/usecases/getAllOrder.usecase';
@@ -13,7 +12,7 @@ import { UpdateOrderByIdUseCase } from 'src/orders/applications/usecases/updateO
 import { CreateOrderDto } from './dto/createOrder.dto';
 import type { UpdateOrderDto } from './dto/updateOrder.dto';
 
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('orders')
 export class OrderController {
   constructor(
@@ -55,7 +54,7 @@ export class OrderController {
   })
   @Transactional()
   @Get()
-  getAll(@Query() query: getAllParams): Promise<IOrder[]> {
+  getAll(@Query() query: getAllParams): Promise<IOrderReturn> {
     return this.getAllOrdersUseCase.execute(query);
   }
 

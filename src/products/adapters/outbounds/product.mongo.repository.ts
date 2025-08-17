@@ -2,10 +2,10 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Builder } from 'builder-pattern';
-import { Model } from 'mongoose';
+import { Builder, StrictBuilder } from 'builder-pattern';
+import { FilterQuery, Model } from 'mongoose';
 import { IProduct, Product, ProductId } from 'src/products/applications/domains/product.domain';
-import { ProductRepository } from 'src/products/applications/ports/product.repository';
+import { getAllParams, IProductReturn, ProductRepository } from 'src/products/applications/ports/product.repository';
 import { ProductEntity } from './product.entity';
 import { ProductMongoSchema, productsCollectionName } from './product.schema';
 
@@ -30,9 +30,49 @@ export class ProductMongoRepository implements ProductRepository {
     await this.productModel.deleteOne({ _id: id }).session(this.txHost.tx).lean().exec();
   }
 
-  async getAll(): Promise<IProduct[]> {
-    const products = await this.productModel.find().session(this.txHost.tx).lean().exec();
-    return products ? products.map(ProductMongoRepository.toDomain) : [];
+  private buildSearchFilter(search: string): FilterQuery<ProductEntity> {
+    return {
+      $or: [{ name: { $regex: search, $options: 'i' } }, { description: { $regex: search, $options: 'i' } }],
+    };
+  }
+
+  private mapProductsToDomain(products: ProductEntity[]): IProduct[] {
+    return products.map(ProductMongoRepository.toDomain);
+  }
+
+  async getAll(params?: getAllParams): Promise<IProductReturn> {
+    const { page = 1, limit = 10, search = '' } = params || {};
+
+    const searchFilter = this.buildSearchFilter(search);
+    const query = this.productModel.find(searchFilter).session(this.txHost.tx).lean();
+
+    if (limit === -1) {
+      const products = await query.exec();
+      const result = StrictBuilder<IProductReturn>()
+        .data(this.mapProductsToDomain(products))
+        .total(products.length)
+        .page(1)
+        .limit(products.length)
+        .totalPages(1)
+        .build();
+      return result;
+    }
+
+    const skip = (page - 1) * limit;
+    const products = await query.skip(skip).limit(limit).exec();
+    const totalPages = Math.ceil(products.length / limit);
+    const total = await this.productModel.countDocuments(searchFilter).session(this.txHost.tx).lean().exec();
+    const data = this.mapProductsToDomain(products);
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+    const result = StrictBuilder<IProductReturn>()
+      .data(data)
+      .total(total)
+      .page(pageNumber)
+      .limit(limitNumber)
+      .totalPages(totalPages)
+      .build();
+    return result;
   }
 
   async getById(id: ProductId): Promise<IProduct | undefined> {

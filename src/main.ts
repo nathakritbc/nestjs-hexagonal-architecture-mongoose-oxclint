@@ -6,10 +6,9 @@ import { AppModule } from './app.module';
 // import cookieParser from 'cookie-parser';
 import { port } from './configs/app.config';
 
-const corsOrigins = ['http://localhost:7000'];
+const corsOrigins = ['http://localhost:3000'];
 
 async function bootstrap() {
-   
   // await otlpSdk.start();
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,

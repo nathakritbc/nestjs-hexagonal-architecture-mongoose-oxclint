@@ -27,7 +27,7 @@ authorization: Bearer {{myAccessToken}}
 }
 
 ### Get All Orders
-GET {{host}}/orders?page=1&limit=2
+GET {{host}}/orders?page=1&limit=2&search=apple
 Content-Type: application/json
 authorization: Bearer {{myAccessToken}}
 

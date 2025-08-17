@@ -1,8 +1,7 @@
 import { Transactional } from '@nestjs-cls/transactional';
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
-import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
 import type {
   IProduct,
   ProductDescription,
@@ -10,6 +9,7 @@ import type {
   ProductName,
 } from 'src/products/applications/domains/product.domain';
 import { ProductImage, ProductPrice } from 'src/products/applications/domains/product.domain';
+import type { getAllParams, IProductReturn } from 'src/products/applications/ports/product.repository';
 import { CreateProductUseCase } from 'src/products/applications/usecases/createProduct.usecase';
 import { DeleteProductByIdUseCase } from 'src/products/applications/usecases/deleteProductById.usecase';
 import { GetAllProductsUseCase } from 'src/products/applications/usecases/getAllProducts.usecase';
@@ -18,7 +18,7 @@ import { UpdateProductByIdUseCase } from 'src/products/applications/usecases/upd
 import { CreateProductDto } from './dto/createProduct.dto';
 import type { UpdateProductDto } from './dto/updateProduct.dto';
 
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @Controller('products')
 export class ProductController {
   constructor(
@@ -61,8 +61,8 @@ export class ProductController {
   })
   @Transactional()
   @Get()
-  getAll(): Promise<IProduct[]> {
-    return this.getAllProductsUseCase.execute();
+  getAll(@Query() query: getAllParams): Promise<IProductReturn> {
+    return this.getAllProductsUseCase.execute(query);
   }
 
   @ApiOperation({ summary: 'Delete a product' })

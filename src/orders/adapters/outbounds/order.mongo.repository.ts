@@ -2,10 +2,10 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Builder } from 'builder-pattern';
+import { Builder, StrictBuilder } from 'builder-pattern';
 import { FilterQuery, Model } from 'mongoose';
 import { IOrder, IOrderCustomer, Order, OrderId } from 'src/orders/applications/domains/order.domain';
-import { getAllParams, OrderRepository } from 'src/orders/applications/ports/order.repository';
+import { getAllParams, IOrderReturn, OrderRepository } from 'src/orders/applications/ports/order.repository';
 import { OrderEntity } from './order.entity';
 import { OrderMongoSchema, ordersCollectionName } from './order.schema';
 
@@ -43,7 +43,7 @@ export class OrderMongoRepository implements OrderRepository {
     return orders.map(OrderMongoRepository.toDomain);
   }
 
-  async getAll(params?: getAllParams): Promise<IOrder[]> {
+  async getAll(params?: getAllParams): Promise<IOrderReturn> {
     const { page = 1, limit = 10, search = '' } = params || {};
 
     const searchFilter = this.buildSearchFilter(search);
@@ -51,12 +51,31 @@ export class OrderMongoRepository implements OrderRepository {
 
     if (limit === -1) {
       const orders = await query.exec();
-      return this.mapOrdersToDomain(orders);
+      const result = StrictBuilder<IOrderReturn>()
+        .data(this.mapOrdersToDomain(orders))
+        .total(orders.length)
+        .page(1)
+        .limit(orders.length)
+        .totalPages(1)
+        .build();
+      return result;
     }
 
     const skip = (page - 1) * limit;
     const orders = await query.skip(skip).limit(limit).exec();
-    return this.mapOrdersToDomain(orders);
+    const totalPages = Math.ceil(orders.length / limit);
+    const total = await this.orderModel.countDocuments(searchFilter).session(this.txHost.tx).lean().exec();
+    const data = this.mapOrdersToDomain(orders);
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+    const result = StrictBuilder<IOrderReturn>()
+      .data(data)
+      .total(total)
+      .page(pageNumber)
+      .limit(limitNumber)
+      .totalPages(totalPages)
+      .build();
+    return result;
   }
 
   async getById(id: OrderId): Promise<IOrder | undefined> {
